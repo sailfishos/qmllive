@@ -37,9 +37,6 @@ This package contains an example application for demonstration of %{name}.
 # Auto-update pkg-config / library version from RPM .spec version
 sed -i -e 's#^VERSION = .*$#VERSION = %{version}#' qmllive.pri
 
-# We know we can build certain parts with Qt 5.2
-sed -i -e '/^!minQtVersion/s/^/#/' qmllive.pro
-
 %qmake5 'CONFIG+= skip-bench skip-tests' -after QMAKE_RPATHDIR=
 make %{?_smp_mflags}
 
