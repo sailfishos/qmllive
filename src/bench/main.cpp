@@ -65,6 +65,7 @@ class MasterApplication : public Application
 
 public:
     MasterApplication(int &argc, char **argv);
+    ~MasterApplication();
 
 private:
     void listenForArguments();
@@ -354,6 +355,11 @@ MasterApplication::MasterApplication(int &argc, char **argv)
         if (!options.noRemote())
             listenForArguments();
     }
+}
+
+MasterApplication::~MasterApplication()
+{
+    delete m_window;
 }
 
 void MasterApplication::listenForArguments()
