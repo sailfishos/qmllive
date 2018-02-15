@@ -44,6 +44,9 @@ Options::Options(QObject *parent)
 
 bool Options::hasNoninteractiveOptions() const
 {
+    if (m_ping)
+        return true;
+
     if (!m_hostsToAdd.isEmpty())
         return true;
 
