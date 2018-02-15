@@ -1,7 +1,8 @@
 include(../../qmllive.pri)
 
 TEMPLATE = app
-TARGET = qmllivebench
+macx*:TARGET = "QmlLive Bench"
+else:TARGET = qmllivebench
 DESTDIR = $$BUILD_DIR/bin
 
 CONFIG += c++11
@@ -61,9 +62,23 @@ include(../widgets/widgets.pri)
 include(../lib.pri)
 
 # install rules
-macx*: CONFIG -= app_bundle
 target.path = $$PREFIX/bin
 INSTALLS += target
 
 win32: RC_FILE = ../../icons/appicon.rc
 macx*: ICON = ../../icons/appicon.icns
+
+DISTFILES += mac_wrapper.sh.in
+
+macx* {
+    make_wrapper.target = $${DESTDIR}/qmllivebench
+    make_wrapper.depends = $$PWD/mac_wrapper.sh.in
+    make_wrapper.commands = sed \"s/%TARGET%/$${TARGET}/g\" $${make_wrapper.depends} > $${make_wrapper.target} \
+                                && chmod +x $${make_wrapper.target}
+    QMAKE_EXTRA_TARGETS += make_wrapper
+    PRE_TARGETDEPS += $${make_wrapper.target}
+    wrapper.files = $${make_wrapper.target}
+    wrapper.path = $${target.path}
+    wrapper.CONFIG += no_check_exist executable
+    INSTALLS += wrapper
+}
