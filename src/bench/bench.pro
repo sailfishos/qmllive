@@ -8,6 +8,12 @@ DESTDIR = $$BUILD_DIR/bin
 CONFIG += c++11
 QT *= gui core quick widgets core-private
 
+macx* {
+    LIBS += -framework AppKit -framework Foundation
+    OBJECTIVE_SOURCES += cocoahelper.mm
+    HEADERS += cocoahelper.h
+}
+
 SOURCES += \
     aboutdialog.cpp \
     main.cpp \
@@ -71,6 +77,8 @@ macx*: ICON = ../../icons/appicon.icns
 DISTFILES += mac_wrapper.sh.in
 
 macx* {
+    QMAKE_INFO_PLIST = $$PWD/Info.plist
+
     make_wrapper.target = $${DESTDIR}/qmllivebench
     make_wrapper.depends = $$PWD/mac_wrapper.sh.in
     make_wrapper.commands = sed \"s/%TARGET%/$${TARGET}/g\" $${make_wrapper.depends} > $${make_wrapper.target} \
