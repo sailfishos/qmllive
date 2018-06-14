@@ -1,0 +1,9 @@
+# Apply this configuration with `git config --local include.path ../.gitconfig`
+
+[remote "upstream"]
+    url = git://code.qt.io/qt-apps/qmllive.git
+    fetch = +refs/heads/*:refs/remotes/upstream/*
+
+[remote "gerrit"]
+    url = ssh://codereview.qt-project.org/qt-apps/qmllive
+    fetch = +refs/heads/*:refs/remotes/gerrit/*
