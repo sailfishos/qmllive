@@ -40,6 +40,7 @@
 
 class LiveRuntime;
 class ContentPluginFactory;
+class Overlay;
 class OverlayUrlInterceptor;
 
 class QMLLIVESHARED_EXPORT LiveNodeEngine : public QObject
@@ -120,8 +121,6 @@ private:
     void checkQmlFeatures();
     QUrl errorScreenUrl() const;
     QUrl queryDocumentViewer(const QUrl& url);
-    void initOverlay();
-    void destroyOverlay();
 
 private:
     int m_xOffset;
@@ -136,6 +135,7 @@ private:
     QDir m_workspace;
     WorkspaceOptions m_workspaceOptions;
     QPointer<OverlayUrlInterceptor> m_overlayUrlInterceptor;
+    QPointer<Overlay> m_overlay;
     QTimer *m_delayReload;
 
     ContentPluginFactory* m_pluginFactory;
