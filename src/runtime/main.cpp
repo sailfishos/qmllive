@@ -45,6 +45,7 @@ struct Options
         : ipcPort(10234)
         , updatesAsOverlay(false)
         , updateOnConnect(false)
+        , allowCreateMissing(false)
         , fullscreen(false)
         , transparent(false)
         , frameless(false)
@@ -53,6 +54,7 @@ struct Options
     int ipcPort;
     bool updatesAsOverlay;
     bool updateOnConnect;
+    bool allowCreateMissing;
     QString activeDocument;
     QString workspace;
     QString pluginPath;
@@ -94,6 +96,10 @@ static void parseArguments(const QStringList &arguments)
     QCommandLineOption updateOnConnectOption("update-on-connect", "update all workspace documents initially (blocking).");
     parser.addOption(updateOnConnectOption);
 
+    QCommandLineOption allowCreateMissingOption("allow-create-missing", "without this option updates are only "
+                                                "accepted for existing workspace documents.");
+    parser.addOption(allowCreateMissingOption);
+
     QCommandLineOption fullScreenOption("fullscreen", "shows in fullscreen mode");
     parser.addOption(fullScreenOption);
 
@@ -113,6 +119,7 @@ static void parseArguments(const QStringList &arguments)
     options.stayontop = parser.isSet(stayOnTopOption);
     options.updatesAsOverlay = parser.isSet(updatesAsOverlayOption);
     options.updateOnConnect = parser.isSet(updateOnConnectOption);
+    options.allowCreateMissing = parser.isSet(allowCreateMissingOption);
     options.fullscreen = parser.isSet(fullScreenOption);
     options.transparent = parser.isSet(transparentOption);
     options.frameless = parser.isSet(framelessOption);
@@ -179,6 +186,8 @@ int main(int argc, char** argv)
     LiveNodeEngine::WorkspaceOptions workspaceOptions = LiveNodeEngine::LoadDummyData | LiveNodeEngine::AllowUpdates;
     if (options.updatesAsOverlay)
         workspaceOptions |= LiveNodeEngine::UpdatesAsOverlay;
+    if (options.allowCreateMissing)
+        workspaceOptions |= LiveNodeEngine::AllowCreateMissing;
 
     RemoteReceiver::ConnectionOptions connectionOptions;
     if (options.updateOnConnect)

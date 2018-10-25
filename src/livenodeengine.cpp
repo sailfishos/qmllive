@@ -88,6 +88,9 @@ const char OVERLAY_PATH_SEPARATOR = '-';
  *          is read only. Updates will be stored in a writable overlay stacked
  *          over the original workspace with the help of
  *          QQmlAbstractUrlInterceptor. Requires \l AllowUpdates.
+ *   \value AllowCreateMissing
+ *          Without this option enabled, updates are only accepted for existing
+ *          workspace documents. Requires \l AllowUpdates.
  *
  * \sa {QmlLive Runtime}
  */
@@ -571,13 +574,20 @@ void LiveNodeEngine::updateDocument(const LiveDocument &document, const QByteArr
         return;
     }
 
-    QString filePath = (m_workspaceOptions & UpdatesAsOverlay)
-        ? m_overlay->reserve(document)
-        : document.absoluteFilePathIn(m_workspace);
+    QString documentPath = document.absoluteFilePathIn(m_workspace);
 
-    QString dirPath = QFileInfo(filePath).absoluteDir().absolutePath();
-    QDir().mkpath(dirPath);
-    QFile file(filePath);
+    if (!(m_workspaceOptions & AllowCreateMissing)) {
+        if (!QFileInfo(documentPath).exists())
+            return;
+    }
+
+    QString writablePath = (m_workspaceOptions & UpdatesAsOverlay)
+        ? m_overlay->reserve(document)
+        : documentPath;
+
+    QString writableDirPath = QFileInfo(writablePath).absoluteDir().absolutePath();
+    QDir().mkpath(writableDirPath);
+    QFile file(writablePath);
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Unable to save file: " << file.errorString();
         return;
@@ -639,6 +649,11 @@ void LiveNodeEngine::setWorkspace(const QString &path, WorkspaceOptions options)
 
     if ((m_workspaceOptions & UpdatesAsOverlay) && !(m_workspaceOptions & AllowUpdates)) {
         qWarning() << "Got UpdatesAsOverlay without AllowUpdates. Enabling AllowUpdates.";
+        m_workspaceOptions |= AllowUpdates;
+    }
+
+    if ((m_workspaceOptions & AllowCreateMissing) && !(m_workspaceOptions & AllowUpdates)) {
+        qWarning() << "Got AllowCreateMissing without AllowUpdates. Enabling AllowUpdates.";
         m_workspaceOptions |= AllowUpdates;
     }
 
