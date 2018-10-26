@@ -134,6 +134,9 @@ bool RemoteReceiver::listen(int port, ConnectionOptions options)
                 qWarning() << "Initial workspace synchronization with QmlLive Bench failed";
                 return false;
             }
+        } else {
+            connect(this, &RemoteReceiver::initComplete, &loop, &QEventLoop::quit);
+            loop.exec();
         }
 
         qInfo() << "QmlLive Bench connected";
@@ -246,6 +249,8 @@ void RemoteReceiver::handleCall(const QString &method, const QByteArray &content
     } else if (method == "ping()") {
         if (m_client)
             m_client->send("pong()", QByteArray());
+    } else if (method == "initComplete()") {
+        emit initComplete();
     }
 }
 
@@ -464,4 +469,10 @@ void RemoteReceiver::onActiveDocumentChanged(const LiveDocument &document)
  * \fn void RemoteReceiver::updateDocument(const LiveDocument &document, const QByteArray &content)
  *
  * This signal is emitted to notify that a \a document has changed its \a content
+ */
+
+/*!
+ * \fn void RemoteReceiver::initComplete()
+ *
+ * This signal is emitted to notify that the initial message exchange was completed
  */

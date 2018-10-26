@@ -74,6 +74,7 @@ public Q_SLOTS:
     QUuid setXOffset(int offset);
     QUuid setYOffset(int offset);
     QUuid setRotation(int rotation);
+    QUuid initComplete();
 
 private Q_SLOTS:
     void handleCall(const QString &method, const QByteArray &content);
