@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 Pelagicore AG
+** Copyright (C) 2018 Jolla Ltd
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QmlLive tool.
@@ -29,56 +29,38 @@
 **
 ****************************************************************************/
 
-#include "imageadapter.h"
-#include "livedocument.h"
-#include <QImageReader>
-#include <QDebug>
-#include <QFileInfo>
-#include <QQmlContext>
+#pragma once
 
-ImageAdapter::ImageAdapter(QObject *parent) :
-    QObject(parent)
+#include <QtCore>
+
+#include "qmllive_global.h"
+
+class LiveDocument;
+
+class QMLLIVESHARED_EXPORT ResourceMap : public QObject
 {
-}
+    Q_OBJECT
 
-bool ImageAdapter::canPreview(const QString &path) const
-{
-    QString format = QImageReader::imageFormat(path);
-    if (!format.isEmpty()) {
-        if (format == "pcx") {
-            if (QFileInfo(path).suffix() == "pcx")
-                return true;
-        } else {
-            return true;
-        }
-    }
+public:
+    explicit ResourceMap(QObject *parent = nullptr);
 
-    return false;
-}
+    QString toResource(const LiveDocument &document) const;
+    LiveDocument toDocument(const QString &resourceName) const;
 
-QImage ImageAdapter::preview(const QString &path, const QSize &requestedSize)
-{
-    QImage img(path);
+    QString errorString() const;
 
-    if (requestedSize.isValid())
-        return img.scaled(requestedSize, Qt::KeepAspectRatio);
-    return img;
-}
+    bool updateMapping(const LiveDocument &qrcDocument, QIODevice *qrcFile);
 
-bool ImageAdapter::canAdapt(const QUrl &url) const
-{
-    return !QImageReader::imageFormat(LiveDocument::toFilePath(url)).isEmpty();
-}
+private:
+    void removeMapping(const LiveDocument &qrcDocument);
+    static QString toLocalePrefix(QLocale::Language language, QLocale::Country country);
+    static QString cLocalePrefix();
+    static QString systemLocalePrefix();
 
-QUrl ImageAdapter::adapt(const QUrl &url, QQmlContext *context)
-{
-    context->setContextProperty("imageViewerBackgroundColor", "black");
-    context->setContextProperty("imageViewerSource", url);
-
-    return QUrl("qrc:/livert/imageviewer_qt5.qml");
-}
-
-bool ImageAdapter::isFullScreen() const
-{
-    return true;
-}
+private:
+    mutable QReadWriteLock m_lock;
+    QString m_errorString;
+    QMultiHash<QString, QString> m_resourcesByDocument;
+    QHash<QString, QString> m_documentByResource;
+    QMultiHash<QString, QString> m_resourcesByQrc;
+};

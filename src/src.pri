@@ -7,6 +7,7 @@ INCLUDEPATH += $${PWD}
 DEFINES += NO_LIBRSYNC
 
 SOURCES += \
+    $$PWD/resourcemap.cpp \
     $$PWD/watcher.cpp \
     $$PWD/livedocument.cpp \
     $$PWD/livehubengine.cpp \
@@ -27,6 +28,7 @@ public_headers += \
     $$PWD/livehubengine.h \
     $$PWD/livenodeengine.h \
     $$PWD/qmlhelper.h \
+    $$PWD/resourcemap.h \
     $$PWD/liveruntime.h \
     $$PWD/logger.h \
     $$PWD/logreceiver.h \
