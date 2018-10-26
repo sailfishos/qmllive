@@ -42,7 +42,7 @@ class MyQmlApplicationEngine : public QQmlApplicationEngine
     Q_OBJECT
 
 public:
-    MyQmlApplicationEngine(const QString &mainQml); // Perform some setup here
+    MyQmlApplicationEngine(); // Perform some setup here
 
     QString mainQml() const;
     QQuickWindow *mainWindow();
@@ -54,7 +54,7 @@ public:
 int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
-    MyQmlApplicationEngine engine(QStringLiteral("qml/window.qml"));
+    MyQmlApplicationEngine engine;
 
     if (!qEnvironmentVariableIsSet("MY_APP_ENABLE_QMLLIVE"))
         return app.exec();
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
     // Listen to IPC call from remote QmlLive Bench
     RemoteReceiver receiver;
     receiver.registerNode(&node);
-    receiver.listen(10234);
+    receiver.listen(10234, RemoteReceiver::BlockingConnect);
 
     // Advanced use: let it know the initially loaded QML component (do this
     // only after registering to receiver!)
@@ -93,10 +93,15 @@ int main(int argc, char **argv)
 static QString MyQmlApplicationEngine_mainQml;
 static QList<QQmlError> MyQmlApplicationEngine_warnings;
 
-MyQmlApplicationEngine::MyQmlApplicationEngine(const QString &mainQml)
+MyQmlApplicationEngine::MyQmlApplicationEngine()
 {
-    // Would be nice to have this in QQmlApplicationEngine
-    MyQmlApplicationEngine_mainQml = mainQml;
+    // Would be nice to have this stored in QQmlApplicationEngine
+    MyQmlApplicationEngine_mainQml = QStringLiteral(APP_MAIN_QML);
+    if (!QFileInfo(MyQmlApplicationEngine_mainQml).isAbsolute()) {
+        MyQmlApplicationEngine_mainQml = QDir(qApp->applicationDirPath())
+            .absoluteFilePath(MyQmlApplicationEngine_mainQml);
+    }
+
     connect(this, &QQmlEngine::warnings, [](const QList<QQmlError> &warnings) {
         MyQmlApplicationEngine_warnings.append(warnings);
     });
@@ -108,7 +113,7 @@ MyQmlApplicationEngine::MyQmlApplicationEngine(const QString &mainQml)
     colors.append(QStringLiteral("black"));
     rootContext()->setContextProperty("myColors", colors);
 
-    load(QDir(qApp->applicationDirPath()).absoluteFilePath(mainQml));
+    load(MyQmlApplicationEngine_mainQml);
 };
 
 QString MyQmlApplicationEngine::mainQml() const

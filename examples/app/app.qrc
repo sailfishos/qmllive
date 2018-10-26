@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/app">
+    <file>qml/customruntime-item.qml</file>
+    <file>qml/customruntime-window.qml</file>
+    <file>qml/item.qml</file>
+    <file>qml/window.qml</file>
+    <file>icon.png</file>
+</qresource>
+</RCC>
