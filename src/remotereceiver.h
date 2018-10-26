@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2016 Pelagicore AG
+** Copyright (C) 2016,2018 Jolla Ltd
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the QmlLive tool.
