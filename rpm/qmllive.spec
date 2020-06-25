@@ -2,7 +2,6 @@ Name: qmllive
 Version: 0
 Release: 1
 Summary: Qt QmlLive - live reloader environment for rapid UI development
-Group: Development/Tools
 License: GPLv3
 URL: http://code.qt.io/cgit/qt-apps/qmllive.git
 Source: %{name}-%{version}.tar.bz2
@@ -37,7 +36,7 @@ This package contains an example application for demonstration of %{name}.
 # Auto-update pkg-config / library version from RPM .spec version
 sed -i -e 's#^VERSION = .*$#VERSION = %{version}#' qmllive.pri
 
-%qmake5 'CONFIG+= skip-bench skip-tests' -after QMAKE_RPATHDIR=
+%qmake5 PKGCONFIG_LIB=%{_lib} 'CONFIG+= skip-bench skip-tests' -after QMAKE_RPATHDIR=
 make %{?_smp_mflags}
 
 %install
