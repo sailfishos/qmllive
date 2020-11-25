@@ -33,10 +33,8 @@ This package contains an example application for demonstration of %{name}.
 %setup -q -n %{name}-%{version}
 
 %build
-# Auto-update pkg-config / library version from RPM .spec version
-sed -i -e 's#^VERSION = .*$#VERSION = %{version}#' qmllive.pri
-
-%qmake5 'CONFIG+= skip-bench skip-tests' -after QMAKE_RPATHDIR=
+%qmake5 VERSION=$(sed 's/+.*//' <<<"%{version}") \
+    'CONFIG+= skip-bench skip-tests' -after QMAKE_RPATHDIR=
 make %{?_smp_mflags}
 
 %install
