@@ -46,6 +46,7 @@ make install INSTALL_ROOT=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
+%license LICENSE.GPL3
 %{_bindir}/qmlliveruntime
 %{_libdir}/libqmllive.so.*
 
